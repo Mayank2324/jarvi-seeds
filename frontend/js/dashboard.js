@@ -4,7 +4,7 @@
 
 let allOrders = [];
 
-const API = "http://localhost:5000";
+const API = window.location.origin;
 
 // ------------------------------
 // Login Check
@@ -179,15 +179,16 @@ function searchOrders() {
     const filtered = allOrders.filter(order => {
 
         return (
-		(order.uniqueId || "").toLowerCase().includes(keyword)
 
-		(order.farmerName || "").toLowerCase().includes(keyword)
+    		(order.uniqueId || "").toLowerCase().includes(keyword) ||
 
-		(order.mobile || "").toLowerCase().includes(keyword)
+    		(order.farmerName || "").toLowerCase().includes(keyword) ||
 
-		(order.village || "").toLowerCase().includes(keyword)
+ 		(order.mobile || "").toLowerCase().includes(keyword) ||
 
-        );
+    		(order.village || "").toLowerCase().includes(keyword)
+
+	);
 
     });
 
