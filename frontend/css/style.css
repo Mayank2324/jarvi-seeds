@@ -990,3 +990,72 @@ body{
     }
 
 }
+/*================ PAYMENT DETAILS =================*/
+
+.payment-details{
+    margin-top:40px;
+    margin-bottom:35px;
+}
+
+.payment-details h3{
+    color:#2e7d32;
+    margin-bottom:12px;
+    font-size:24px;
+}
+
+.payment-details p{
+    color:#666;
+    margin-bottom:20px;
+    line-height:1.7;
+}
+
+.payment-card{
+    background:#f8fff8;
+    border:2px solid #d8ecd8;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+
+.payment-card table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.payment-card td{
+    padding:14px 10px;
+    border-bottom:1px solid #e8e8e8;
+    font-size:16px;
+}
+
+.payment-card tr:last-child td{
+    border-bottom:none;
+}
+
+.payment-card td:first-child{
+    width:220px;
+    color:#2e7d32;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+
+    .payment-card td{
+        display:block;
+        width:100%;
+        padding:8px 0;
+        border:none;
+    }
+
+    .payment-card tr{
+        display:block;
+        margin-bottom:18px;
+        border-bottom:1px solid #eee;
+        padding-bottom:12px;
+    }
+
+    .payment-card tr:last-child{
+        border-bottom:none;
+    }
+
+}
