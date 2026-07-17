@@ -75,50 +75,48 @@ exports.downloadPDF = async (req, res) => {
 
     const table = {
       headers: [
-  "Order ID",
-  "Customer",
-  "Mobile",
-  "Red",
-  "Red1",
-  "Red+",
-  "White",
-  "Full Address",
-  "Delivery",
-],
+        "Order ID",
+        "Customer",
+        "Mobile",
+        "Red",
+        "Red1",
+        "Red+",
+        "White",
+        "PIN Code",
+        "Full Address",
+        "Delivery",
+      ],
 
       rows: [],
     };
-orders.forEach((o) => {
 
-  const address = `${o.fullAddress}
+    orders.forEach((o) => {
+      const address = `${o.fullAddress}
 ${o.village}, ${o.district}
-${o.state} - ${o.pinCode}`;
+${o.state}`;
 
-  table.rows.push([
-    o.uniqueId,
-    o.farmerName,
-    o.mobile,
-    o.varieties.jarviRed,
-    o.varieties.jarviRed1,
-    o.varieties.jarviRedPlus,
-    o.varieties.jarviWhiteHoney,
-    address,
-    o.deliveryDate,
-  ]);
-
-});
+      table.rows.push([
+        o.uniqueId,
+        o.farmerName,
+        o.mobile,
+        o.varieties.jarviRed,
+        o.varieties.jarviRed1,
+        o.varieties.jarviRedPlus,
+        o.varieties.jarviWhiteHoney,
+        o.pinCode,
+        address,
+        o.deliveryDate,
+      ]);
+    });
 
     await doc.table(table, {
       width: 790,
-      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
-    prepareRow: (row, iCol, iRow, rectRow) => {
-
-  doc
-    .font("Helvetica")
-    .fontSize(8);
-
-},
-});
+      prepareHeader: () =>
+        doc.font("Helvetica-Bold").fontSize(10),
+      prepareRow: () => {
+        doc.font("Helvetica").fontSize(8);
+      },
+    });
 
     doc.end();
   } catch (err) {

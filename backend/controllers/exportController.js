@@ -2,9 +2,7 @@ const ExcelJS = require("exceljs");
 const Order = require("../models/Order");
 
 exports.exportExcel = async (req, res) => {
-
     try {
-
         const { month, year } = req.query;
 
         if (!month || !year) {
@@ -16,9 +14,7 @@ exports.exportExcel = async (req, res) => {
 
         // Block future months
         const now = new Date();
-
         const selected = new Date(Number(year), Number(month) - 1);
-
         const current = new Date(now.getFullYear(), now.getMonth());
 
         if (selected > current) {
@@ -29,44 +25,34 @@ exports.exportExcel = async (req, res) => {
         }
 
         const start = new Date(year, month - 1, 1);
-
         const end = new Date(year, month, 1);
 
         const orders = await Order.find({
-
             createdAt: {
-
                 $gte: start,
-
                 $lt: end
-
             }
-
         }).sort({
-
             createdAt: 1
-
         });
 
         const workbook = new ExcelJS.Workbook();
-
         const sheet = workbook.addWorksheet("Orders");
 
-        sheet.mergeCells("A1:I1");
-
+        // Title
+        sheet.mergeCells("A1:J1");
         sheet.getCell("A1").value = "JARVI SEEDS & NURSERY";
-
         sheet.getCell("A1").font = {
             bold: true,
             size: 18
         };
-
         sheet.getCell("A1").alignment = {
             horizontal: "center"
         };
 
         sheet.addRow([]);
 
+        // Header Row
         sheet.addRow([
             "Order ID",
             "Farmer",
@@ -75,6 +61,7 @@ exports.exportExcel = async (req, res) => {
             "Jarvi Red 1",
             "Jarvi Red Plus",
             "White Honey",
+            "PIN Code",
             "Full Address",
             "Delivery Date"
         ]);
@@ -91,33 +78,23 @@ exports.exportExcel = async (req, res) => {
         };
 
         header.eachCell(cell => {
-
             cell.fill = {
-
                 type: "pattern",
-
                 pattern: "solid",
-
                 fgColor: {
                     argb: "2E7D32"
                 }
-
             };
 
             cell.font = {
-
                 color: {
-
                     argb: "FFFFFF"
-
                 },
-
                 bold: true
-
             };
-
         });
 
+        // Data
         orders.forEach(order => {
 
             const address = `${order.fullAddress},
@@ -126,115 +103,75 @@ ${order.district},
 ${order.state} - ${order.pinCode}`;
 
             sheet.addRow([
-
                 order.uniqueId,
-
                 order.farmerName,
-
                 order.mobile,
-
                 order.varieties.jarviRed,
-
                 order.varieties.jarviRed1,
-
                 order.varieties.jarviRedPlus,
-
                 order.varieties.jarviWhiteHoney,
-
+                order.pinCode,
                 address,
-
                 order.deliveryDate
-
             ]);
 
         });
 
+        // Column Widths
         sheet.columns = [
-
-            { width: 18 },
-
-            { width: 25 },
-
-            { width: 18 },
-
-            { width: 12 },
-
-            { width: 12 },
-
-            { width: 15 },
-
-            { width: 15 },
-
-            { width: 55 },
-
-            { width: 18 }
-
+            { width: 18 }, // Order ID
+            { width: 25 }, // Farmer
+            { width: 18 }, // Mobile
+            { width: 12 }, // Jarvi Red
+            { width: 12 }, // Jarvi Red 1
+            { width: 15 }, // Jarvi Red Plus
+            { width: 15 }, // White Honey
+            { width: 15 }, // PIN Code
+            { width: 55 }, // Address
+            { width: 18 }  // Delivery Date
         ];
 
         sheet.eachRow(row => {
-
             row.eachCell(cell => {
 
                 cell.alignment = {
-
                     vertical: "middle",
-
                     horizontal: "center",
-
                     wrapText: true
-
                 };
 
                 cell.border = {
-
                     top: { style: "thin" },
-
                     left: { style: "thin" },
-
                     bottom: { style: "thin" },
-
                     right: { style: "thin" }
-
                 };
 
             });
-
         });
 
         res.setHeader(
-
             "Content-Type",
-
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
         );
 
         res.setHeader(
-
             "Content-Disposition",
-
             `attachment; filename=JarviSeeds-${month}-${year}.xlsx`
-
         );
 
         await workbook.xlsx.write(res);
 
         res.end();
 
-    }
+    } catch (err) {
 
-    catch (err) {
-
-        console.log(err);
+        console.error(err);
 
         res.status(500).json({
-
             success: false,
-
             message: "Excel Export Failed"
-
         });
 
     }
-
 };
