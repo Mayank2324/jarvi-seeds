@@ -4,7 +4,10 @@
 
 let allOrders = [];
 
-const API = window.location.origin;
+const API =
+    window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : window.location.origin;
 
 // ------------------------------
 // Login Check
