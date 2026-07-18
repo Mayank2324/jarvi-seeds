@@ -8,7 +8,7 @@ document.querySelectorAll(".variety-check").forEach((checkbox) => {
 });
 
 const form = document.getElementById("orderForm");
-const submitBtn = document.getElementById("submitBtn");
+const submitBtn = document.querySelector(".submit-btn");
 const formMessage = document.getElementById("formMessage");
 
 // Same-origin API base. If you host the frontend separately from the
@@ -18,8 +18,18 @@ const API_BASE = "";
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  formMessage.className = "form-message";
-  formMessage.textContent = "";
+  submitBtn.disabled = true;
+submitBtn.innerHTML = "⏳ Submitting...";
+
+formMessage.className = "form-message";
+formMessage.style.display = "block";
+formMessage.style.color = "#0d6efd";
+formMessage.innerHTML = "⏳ Please wait... Your order is being submitted.";
+
+  if (formMessage) {
+    formMessage.className = "form-message";
+    formMessage.textContent = "";
+  }
 
   const payload = {
     farmerName: document.getElementById("farmerName").value.trim(),
@@ -28,11 +38,11 @@ form.addEventListener("submit", async (e) => {
     jarviRedPlus: Number(document.getElementById("jarviRedPlus").value || 0),
     jarviWhiteHoney: Number(document.getElementById("jarviWhiteHoney").value || 0),
     mobile: document.getElementById("mobile").value.trim(),
-    fullAddress: document.getElementById("fullAddress").value.trim(),
+    fullAddress: document.getElementById("address").value.trim(),
     state: document.getElementById("state").value.trim(),
     village: document.getElementById("village").value.trim(),
     district: document.getElementById("district").value.trim(),
-    pinCode: document.getElementById("pinCode").value.trim(),
+    pinCode: document.getElementById("pin").value.trim(),
     farmLocation: document.getElementById("farmLocation").value.trim(),
     deliveryDate: document.getElementById("deliveryDate").value
   };
@@ -50,7 +60,14 @@ form.addEventListener("submit", async (e) => {
 
     if (res.ok && data.success) {
       formMessage.classList.add("success");
-      formMessage.textContent = `Order placed! Your Order ID is ${data.uniqueId}. A confirmation SMS is on its way.`;
+      
+      formMessage.style.color = "green";
+formMessage.innerHTML =
+`✅ Order submitted successfully!<br>
+
+Your Order ID: <strong>${data.uniqueId}</strong><br>
+You will receive a confirmation message shortly.`;
+
       form.reset();
       document.querySelectorAll('input[type="number"]').forEach((el) => (el.disabled = true));
     } else {
@@ -61,7 +78,10 @@ form.addEventListener("submit", async (e) => {
     formMessage.classList.add("error");
     formMessage.textContent = "Could not reach the server. Please check your connection and try again.";
   } finally {
+    if (!formMessage.innerHTML.includes("Order submitted successfully")) {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Submit Order";
+    submitBtn.innerHTML = "🌱 Place My Order";
+    
+}
   }
 });
